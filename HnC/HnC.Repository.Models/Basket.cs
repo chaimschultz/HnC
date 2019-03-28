@@ -9,10 +9,10 @@ namespace HnC.Repository.Models
         public int BasketId { get; set; }
         [Required]
         public int UserId { get; set; }
-        [ForeignKey("UserId")]
-        public User User { get; set; }
         [Required]
         public int ItemId { get; set; }
+        [Required]
+        public int Quantity { get; set; }
 
     }
 }

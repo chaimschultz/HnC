@@ -1,4 +1,5 @@
 ﻿using HnC.Repository.Interfaces;
+using HnC.Repository.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,174 +16,112 @@ namespace HnC.Repository.EntityFrameworkCore
             _context = dbContext;
         }
 
-        //public async Task<Outcome.Upsert> AddOrUpdateUsersRatingAsync(int UserId, int FilmId, int RatingTypeId)
-        //{
-        //    if (!_context.Films.Any(x => x.FilmId == FilmId))
-        //        return Outcome.Upsert.EntityNotFound;
 
-        //    if (!_context.Users.Any(x => x.UserId == UserId))
-        //        return Outcome.Upsert.EntityNotFound;
+        /// <summary>
+        /// Add items to basket async
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="itemId"></param>
+        /// <param name="quantity"></param>
+        /// <returns></returns>
+        public int AddItemToBasket(int userId, int itemId, int quantity)
+        {
+            var basketItem = new Basket { UserId = userId, ItemId = itemId, Quantity = quantity };
+            _context.BasketItems.Add(basketItem);
+            _context.SaveChanges();
+            return basketItem.BasketId;
+        }
 
-        //    var upperBoundOfEnum = (int)Enum.GetValues(typeof(Rating.RatingType)).Cast<Rating.RatingType>().Max();
-        //    var lowerBoundOfEnum = (int)Enum.GetValues(typeof(Rating.RatingType)).Cast<Rating.RatingType>().Min();
+        /// <summary>
+        /// Add new items to basket async
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="itemId"></param>
+        /// <param name="quantity"></param>
+        /// <returns></returns>
+        public async Task<int> AddItemToBasketAsync(int userId, int itemId, int quantity)
+        {
+            var basketItem = new Basket { UserId = userId, ItemId = itemId, Quantity = quantity };
+            await _context.BasketItems.AddAsync(basketItem);
+            await _context.SaveChangesAsync();
+            return basketItem.BasketId;
+        }
 
-        //    if (RatingTypeId > upperBoundOfEnum || RatingTypeId < lowerBoundOfEnum)
-        //        return Outcome.Upsert.ParameterOutOfBounds;
+        /// <summary>
+        /// Updates the quantity of an item in the basket
+        /// </summary>
+        /// <param name="basketId"></param>
+        /// <param name="itemId"></param>
+        /// <param name="quantity"></param>
+        public void UpdateItemQuantityInBasket(int basketId, int itemId, int quantity)
+        {
+            var basketItem = _context.BasketItems.SingleOrDefault(x => x.BasketId == basketId && x.ItemId == itemId);
+            basketItem.Quantity = quantity;
+            _context.BasketItems.Update(basketItem);
+            _context.SaveChanges();
+        }
 
-        //    Film film = _context.Films.FirstOrDefault(x => x.Ratings.Any(y => y.UserId == UserId
-        //                && y.FilmId == FilmId));
+        /// <summary>
+        /// Updates the quantity of an item in the basket async
+        /// </summary>
+        /// <param name="basketId"></param>
+        /// <param name="itemId"></param>
+        /// <param name="quantity"></param>
+        /// <returns></returns>
+        public async Task UpdateItemQuantityInBasketAsync(int basketId, int itemId, int quantity)
+        {
+            var basketItem = _context.BasketItems.SingleOrDefault(x => x.BasketId == basketId && x.ItemId == itemId);
+            basketItem.Quantity = quantity;
+            _context.BasketItems.Update(basketItem);
+            await _context.SaveChangesAsync();
+        }
 
-        //    // Record exists, do update
-        //    if (film != null)
-        //    {
-        //        film.Ratings.FirstOrDefault(x => x.UserId == UserId).TypeId = (Rating.RatingType)RatingTypeId;
-        //        await _context.SaveChangesAsync();
-        //        return Outcome.Upsert.Updated;
-        //    }
+        /// <summary>
+        /// Removes an item from the basket
+        /// </summary>
+        /// <param name="basketId"></param>
+        /// <param name="itemId"></param>
+        public void RemoveItemFromBasket(int basketId, int itemId)
+        {
+            var basketItem = _context.BasketItems.SingleOrDefault(x => x.BasketId == basketId && x.ItemId == itemId);
+            _context.BasketItems.Remove(basketItem);
+            _context.SaveChanges();
+        }
 
-        //    //No record, so insert a new one            
-        //    film = _context.Films.FirstOrDefault(y => y.FilmId == FilmId);
-        //    film.Ratings.Add(new Rating
-        //    {
-        //        FilmId = FilmId,
-        //        TypeId = (Rating.RatingType)RatingTypeId,
-        //        UserId = UserId
-        //    });
+        /// <summary>
+        /// Removes an item from the basket async
+        /// </summary>
+        /// <param name="basketId"></param>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        public async Task RemoveItemFromBasketAsync(int basketId, int itemId)
+        {
+            var basketItem = _context.BasketItems.SingleOrDefault(x => x.BasketId == basketId && x.ItemId == itemId);
+            _context.BasketItems.Remove(basketItem);
+            await _context.SaveChangesAsync();
+        }
 
-        //    await _context.SaveChangesAsync();
-        //    return Outcome.Upsert.Added;
-        //}
+        /// <summary>
+        /// Removes all items from a basket
+        /// </summary>
+        /// <param name="userId"></param>
+        public void ClearAllItemsFromBasket(int userId)
+        {
+            var itemsToRemove = _context.BasketItems.Where(x => x.UserId == userId);
+            _context.BasketItems.RemoveRange(itemsToRemove);
+            _context.SaveChanges();
+        }
 
-        //public async Task<IEnumerable<FilmAndAverageRating>> GetFilmsAndAverageRatingsAsync(string title, DateTime yearOfRelease, List<int> genres)
-        //{
-        //    return await Task.FromResult(GetFilmsAndAverageRatings(title, yearOfRelease, genres));
-        //}
-
-        //private IEnumerable<FilmAndAverageRating> GetFilmsAndAverageRatings(string title, DateTime yearOfRelease, List<int> genres)
-        //{
-        //    //Query DB
-        //    var matches = _context.Films.Where(
-        //        x =>
-        //            x.YearOfRelease.Year == yearOfRelease.Year
-        //            ||
-        //            (x.Genres == null) ? false : x.Genres.Any(y => (genres == null) ? false : genres.Contains((int)y.TypeId))
-        //            ||
-        //            x.Title.ToLowerInvariant().Contains(title.ToLowerInvariant())
-        //        ).ToList();
-
-        //    //Action to perform averaging
-        //    decimal CalculateAverage(List<Rating> ratings)
-        //    {
-        //        if (ratings.Count == 0)
-        //            return 0;
-
-        //        decimal average = ratings.Sum(x => (int)x.TypeId) / ratings.Count;
-        //        return Math.Round(average, 2, MidpointRounding.AwayFromZero);
-        //    }
-
-        //    //Formulate response
-        //    var response = matches.Select(x => new FilmAndAverageRating
-        //    {
-        //        Id = x.FilmId,
-        //        Title = x.Title,
-        //        YearOfRelease = x.YearOfRelease.Year,
-        //        RunningTime = x.RunningTime,
-        //        AverageRating = CalculateAverage(x.Ratings)
-        //    });
-
-        //    return response;
-        //}
-
-        //public async Task<IEnumerable<FilmAndAverageTotalRating>> GetTop5FilmsByTotalUserRatingsAsync()
-        //{
-        //    return await Task.FromResult(GetTop5FilmsByTotalUserRatings());
-        //}
-
-        //private IEnumerable<FilmAndAverageTotalRating> GetTop5FilmsByTotalUserRatings()
-        //{
-        //    //Query DB
-        //    var matches = _context.Films.ToList();
-
-        //    //Action to perform averaging
-        //    decimal CalculateAverage(List<Rating> ratings)
-        //    {
-        //        if (ratings.Count == 0)
-        //            return 0;
-
-        //        decimal average = ratings.Sum(x => (int)x.TypeId) / ratings.Count;
-        //        average = (Math.Round(average * 2, MidpointRounding.AwayFromZero) / 2);
-        //        return average;
-        //    }
-
-        //    //Action to perform summing
-        //    decimal CalculateTotal(List<Rating> ratings)
-        //    {
-        //        if (ratings.Count == 0)
-        //            return 0;
-
-        //        decimal sum = ratings.Sum(x => (int)x.TypeId);
-        //        return sum;
-        //    }
-
-        //    //Formulate response
-        //    return matches.Select(x => new FilmAndAverageTotalRating
-        //    {
-        //        Id = x.FilmId,
-        //        Title = x.Title,
-        //        YearOfRelease = x.YearOfRelease.Year,
-        //        RunningTime = x.RunningTime,
-        //        AverageRating = CalculateAverage(x.Ratings),
-        //        TotalRating = CalculateTotal(x.Ratings)
-        //    })
-        //    .OrderByDescending(y => y.TotalRating)
-        //    .ThenBy(z => z.Title)
-        //    .Take(5);
-        //}
-
-        //public async Task<IEnumerable<FilmAndAverageTotalRating>> GetTop5UsersFilmsByTotalUserRatingsAsync(int userId)
-        //{
-        //    return await Task.FromResult(GetTop5UsersFilmsByTotalUserRatings(userId));
-        //}
-
-        //private IEnumerable<FilmAndAverageTotalRating> GetTop5UsersFilmsByTotalUserRatings(int userId)
-        //{
-        //    //Query DB
-        //    var matches = _context.Films.Where(x => x.Ratings.Any(y => y.UserId == userId)).ToList();
-
-        //    //Action to perform averaging
-        //    decimal CalculateAverage(List<Rating> ratings)
-        //    {
-        //        if (ratings.Count == 0)
-        //            return 0;
-
-        //        decimal average = ratings.Sum(x => (int)x.TypeId) / ratings.Count;
-        //        average = (Math.Round(average * 2, MidpointRounding.AwayFromZero) / 2);
-        //        return average;
-        //    }
-
-        //    //Action to perform summing
-        //    decimal CalculateTotal(List<Rating> ratings)
-        //    {
-        //        if (ratings.Count == 0)
-        //            return 0;
-
-        //        decimal sum = ratings.Sum(x => (int)x.TypeId);
-        //        return sum;
-        //    }
-
-        //    //Formulate response
-        //    return matches.Select(x => new FilmAndAverageTotalRating
-        //    {
-        //        Id = x.FilmId,
-        //        Title = x.Title,
-        //        YearOfRelease = x.YearOfRelease.Year,
-        //        RunningTime = x.RunningTime,
-        //        AverageRating = CalculateAverage(x.Ratings),
-        //        TotalRating = CalculateTotal(x.Ratings)
-        //    })
-        //    .OrderByDescending(y => y.TotalRating)
-        //    .ThenBy(z => z.Title)
-        //    .Take(5);
-        //}
+        /// <summary>
+        /// Removes all items from a basket async
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task ClearAllItemsFromBasketAsync(int userId)
+        {
+            var itemsToRemove = _context.BasketItems.Where(x => x.UserId == userId);
+            _context.BasketItems.RemoveRange(itemsToRemove);
+            await _context.SaveChangesAsync();
+        }
     }
 }
