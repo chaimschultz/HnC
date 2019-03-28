@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HnC.Repository.EntityFramew
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HnC.Repository.Models", "HnC.Repository.Models\HnC.Repository.Models.csproj", "{9A75AA1F-74F6-4BFC-8471-7DBD008A5111}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web API", "Web API", "{9A1FA670-A611-40EB-828E-EC8F3C6FC666}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HnC.Web.Api", "HnC.Web.Api\HnC.Web.Api.csproj", "{610ABC11-5E8F-450C-B98C-C7BFECBEB195}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +41,10 @@ Global
 		{9A75AA1F-74F6-4BFC-8471-7DBD008A5111}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A75AA1F-74F6-4BFC-8471-7DBD008A5111}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A75AA1F-74F6-4BFC-8471-7DBD008A5111}.Release|Any CPU.Build.0 = Release|Any CPU
+		{610ABC11-5E8F-450C-B98C-C7BFECBEB195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{610ABC11-5E8F-450C-B98C-C7BFECBEB195}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{610ABC11-5E8F-450C-B98C-C7BFECBEB195}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{610ABC11-5E8F-450C-B98C-C7BFECBEB195}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +54,7 @@ Global
 		{C6D18A5C-F2E4-4A90-AE3C-EEE2E2C5FDC9} = {78458FD3-5EB1-4624-A6C1-E4B21177B997}
 		{FF3738AD-7EB2-4D2D-9720-9B064C14B076} = {78458FD3-5EB1-4624-A6C1-E4B21177B997}
 		{9A75AA1F-74F6-4BFC-8471-7DBD008A5111} = {78458FD3-5EB1-4624-A6C1-E4B21177B997}
+		{610ABC11-5E8F-450C-B98C-C7BFECBEB195} = {9A1FA670-A611-40EB-828E-EC8F3C6FC666}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9816B22F-6C9D-476E-ADBA-C3093495F4BF}

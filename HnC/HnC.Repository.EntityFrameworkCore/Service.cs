@@ -48,6 +48,26 @@ namespace HnC.Repository.EntityFrameworkCore
         }
 
         /// <summary>
+        /// Gets items in basket
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public List<Basket> GetItemsInBasket(int userId)
+        {
+            return _context.BasketItems.Where(x => x.UserId == userId).ToList();
+        }
+
+        /// <summary>
+        /// Gets items in basket async
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<List<Basket>> GetItemsInBasketAsync(int userId)
+        {
+            return await Task.FromResult(GetItemsInBasket(userId));
+        }
+
+        /// <summary>
         /// Updates the quantity of an item in the basket
         /// </summary>
         /// <param name="basketId"></param>

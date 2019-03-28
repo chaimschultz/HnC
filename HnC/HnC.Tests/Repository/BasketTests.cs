@@ -72,6 +72,98 @@ namespace HnC.Tests
         }
 
         [TestMethod]
+        public void GetItemsInBasket()
+        {
+            //Arrange
+            var options = new DbContextOptionsBuilder<Context>()
+                .UseInMemoryDatabase(databaseName: "GetItemsInBasket")
+                .Options;
+
+            var userId = 1;
+            int itemId;
+            var quantity = 1;
+            var count = 0;
+
+            //Act
+            using (var context = new Context(options))
+            {
+                var service = new Service(context);
+
+                //Add 4 items to the basket
+                while (count <= 4)
+                {
+                    count++;
+                    itemId = count;
+                    service.AddItemToBasket(userId, itemId, quantity);
+                }
+
+                //Assert items are added
+                Assert.AreEqual(count, context.BasketItems.Count());
+            }
+
+            //Assert
+            using (var context = new Context(options))
+            {
+                var service = new Service(context);
+
+                //Get Items
+                var items = service.GetItemsInBasket(userId);
+
+                Assert.AreEqual(items.Count, context.BasketItems.Count());
+                Assert.AreEqual(items.First().BasketId, context.BasketItems.First().BasketId);
+                Assert.AreEqual(items.First().UserId, context.BasketItems.First().UserId);
+                Assert.AreEqual(items.First().ItemId, context.BasketItems.First().ItemId);
+                Assert.AreEqual(items.First().Quantity, context.BasketItems.First().Quantity);
+            }
+        }
+
+        [TestMethod]
+        public void GetItemsInBasketAsync()
+        {
+            //Arrange
+            var options = new DbContextOptionsBuilder<Context>()
+                .UseInMemoryDatabase(databaseName: "GetItemsInBasketAsync")
+                .Options;
+
+            var userId = 1;
+            int itemId;
+            var quantity = 1;
+            var count = 0;
+
+            //Act
+            using (var context = new Context(options))
+            {
+                var service = new Service(context);
+
+                //Add 4 items to the basket
+                while (count <= 4)
+                {
+                    count++;
+                    itemId = count;
+                    service.AddItemToBasket(userId, itemId, quantity);
+                }
+
+                //Assert items are added
+                Assert.AreEqual(count, context.BasketItems.Count());
+            }
+
+            //Assert
+            using (var context = new Context(options))
+            {
+                var service = new Service(context);
+
+                //Get Items
+                var items = service.GetItemsInBasketAsync(userId).GetAwaiter().GetResult();
+
+                Assert.AreEqual(items.Count, context.BasketItems.Count());
+                Assert.AreEqual(items.First().BasketId, context.BasketItems.First().BasketId);
+                Assert.AreEqual(items.First().UserId, context.BasketItems.First().UserId);
+                Assert.AreEqual(items.First().ItemId, context.BasketItems.First().ItemId);
+                Assert.AreEqual(items.First().Quantity, context.BasketItems.First().Quantity);
+            }
+        }
+
+        [TestMethod]
         public void UpdateItemQuantityInBasket()
         {
             //Arrange
