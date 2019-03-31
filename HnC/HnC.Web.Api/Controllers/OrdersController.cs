@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using HnC.Repository.Interfaces;
+﻿using HnC.Repository.Interfaces;
+using HnC.Repository.Models;
 using HnC.Web.Api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace HnC.Web.Api.Controllers
 {
@@ -20,29 +19,36 @@ namespace HnC.Web.Api.Controllers
             _repoService = repoService;
         }
 
-        // GET api/values
-        //[HttpGet]
-        //public ActionResult<IEnumerable<string>> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
+        [HttpGet("ping")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult Ping()
+        {
+            return Ok("Pong");
+        }
 
-        [HttpGet]
-        [ProducesResponseType(typeof(List<BasketItemGetResponse>), StatusCodes.Status200OK)]
+        [HttpGet("{userId}")]
+        [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetItems([FromBody]int userId)
+        public async Task<IActionResult> GetOrder(int userId)
         {
             try
             {
                 if (userId < 1)
                     return new StatusCodeResult(StatusCodes.Status400BadRequest);
 
-                var basketItems = await
-                    _repoService.GetItemsInBasketAsync(userId);
+                var order = await
+                    _repoService.GetOrderAsync(userId);
 
-                if (basketItems != null)
-                    return Ok(basketItems);
+                if (order == null)
+                    return new StatusCodeResult(StatusCodes.Status404NotFound);
+
+                return Ok(order);
+            }
+            catch (NullReferenceException e)
+            {
+                //TODO: log
+                return new StatusCodeResult(StatusCodes.Status404NotFound);
             }
             catch (Exception e)
             {
@@ -52,45 +58,35 @@ namespace HnC.Web.Api.Controllers
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/values
-        //[HttpPost]
-        //public void Post([FromBody] string value)
-        //{
-        //}
-
         [HttpPost]
-        [ProducesResponseType(typeof(BasketItemPostResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddItem([FromBody]BasketItemPostRequest item)
+        public async Task<IActionResult> AddOrder([FromBody]AddOrderRequest item)
         {
             try
             {
-                if (item.UserId < 1
-                    && item.ItemId < 1
-                    && item.Quantity < 1)
+                if (item.UserId < 1)
                     return new StatusCodeResult(StatusCodes.Status400BadRequest);
-                
-                var basketId = await
-                    _repoService.AddItemToBasketAsync(item.UserId, item.ItemId, item.Quantity);
 
-                if (basketId > 0)
-                    return Ok(new BasketItemPostResponse
-                    {
-                        BasketId = basketId,
-                        UserId = item.UserId,
-                        ItemId = item.ItemId,
-                        Quantity = item.Quantity
-                    });
+                //Check if it already exists
+                var order = await
+                    _repoService.GetOrderAsync(item.UserId);
+
+                if(order != null)
+                    return new StatusCodeResult(StatusCodes.Status400BadRequest);
+
+                var orderId = await
+                    _repoService.AddOrderAsync(item.UserId);
+
+                if (orderId > 0)
+                    return new StatusCodeResult(StatusCodes.Status201Created);
+            }
+            catch (NullReferenceException e)
+            {
+                //TODO: log
+                return new StatusCodeResult(StatusCodes.Status404NotFound);
             }
             catch (Exception e)
             {
@@ -100,16 +96,43 @@ namespace HnC.Web.Api.Controllers
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpDelete("{userId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> RemoveOrder(int userId)
         {
+            try
+            {
+                if (userId < 1)
+                    return new StatusCodeResult(StatusCodes.Status400BadRequest);
+
+                //Check if it already exists
+                var order = await
+                    _repoService.GetOrderAsync(userId);
+
+                if (order == null)
+                    return new StatusCodeResult(StatusCodes.Status404NotFound);
+
+                var orderId = await
+                    _repoService.RemoveOrderAsync(userId);
+
+                if (orderId > 0)
+                    return new StatusCodeResult(StatusCodes.Status204NoContent);
+            }
+            catch (NullReferenceException e)
+            {
+                //TODO: log
+                return new StatusCodeResult(StatusCodes.Status404NotFound);
+            }
+            catch (Exception e)
+            {
+                //TODO: log
+            }
+
+            return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }
