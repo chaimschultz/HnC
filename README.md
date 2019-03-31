@@ -2,8 +2,8 @@
 
 ## API Definition
 There are 2 API definitons available:
- 1. *https://documenter.getpostman.com/view/7105739/S17wPmc9
- 2.*in the **swagger.json** file located in the root
+ 1. https://documenter.getpostman.com/view/7105739/S17wPmc9
+ 2. in the **swagger.json** file located in the root
  
 ## Client Library
 
