@@ -27,8 +27,9 @@ namespace HnC.Web.Api.Controllers
         }
 
         [HttpGet("{userId}")]
-        [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetOrder(int userId)
         {
@@ -43,7 +44,9 @@ namespace HnC.Web.Api.Controllers
                 if (order == null)
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
 
-                return Ok(order);
+                OrderResponse response = new OrderResponse { OrderId = order.OrderId, UserId = order.UserId };
+
+                return Ok(response);
             }
             catch (NullReferenceException e)
             {

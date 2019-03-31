@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HnC.Web.Api.Controllers
@@ -28,7 +29,7 @@ namespace HnC.Web.Api.Controllers
         }
 
         [HttpGet("orders/{orderId}/items")]
-        [ProducesResponseType(typeof(List<OrderItem>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<OrderItemResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -45,7 +46,16 @@ namespace HnC.Web.Api.Controllers
                 if (items == null)
                     return new StatusCodeResult(StatusCodes.Status404NotFound);
 
-                return Ok(items);
+                var response = items.Select(x => new OrderItemResponse
+                    {
+                        ItemId = x.ItemId,
+                        OrderId = x.OrderId,
+                        Quantity = x.Quantity
+                    }
+                );
+
+
+                return Ok(response);
             }
             catch (NullReferenceException e)
             {
