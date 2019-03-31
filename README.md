@@ -1,9 +1,9 @@
 # HnC Project
 
 ## API Definition
- There are 2 API definitons available:
- ..*https://documenter.getpostman.com/view/7105739/S17wPmc9
- ..*in the **swagger.json** file located in the root
+There are 2 API definitons available:
+ 1. *https://documenter.getpostman.com/view/7105739/S17wPmc9
+ 2.*in the **swagger.json** file located in the root
  
 ## Client Library
 
