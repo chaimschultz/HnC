@@ -163,7 +163,7 @@ namespace HnC.Web.Api.Controllers
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
 
-        [HttpDelete("orders/{orderId}/items}")]
+        [HttpDelete("orders/{orderId}/items")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
