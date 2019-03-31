@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HnC.Client.Library\HnC.Client.Library.csproj" />
     <ProjectReference Include="..\HnC.Repository.EntityFrameworkCore\HnC.Repository.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
